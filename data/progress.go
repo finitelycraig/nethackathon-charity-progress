@@ -115,15 +115,15 @@ func (m Progress) View() string {
 	raisedSummaryStyle := lipgloss.NewStyle().Width(m.progress.Width / 2).Align(lipgloss.Left)
 	goalSummaryStyle := lipgloss.NewStyle().Width(m.progress.Width / 2).Align(lipgloss.Right)
 	progressSummary := lipgloss.JoinHorizontal(lipgloss.Center, raisedSummaryStyle.Render(m.amountString()), goalSummaryStyle.Render(m.goalString()))
-	progressBar := m.progress.View() + "\n\n" + helpStyle("Press ctl+c or q or Esc to quit")
+	progressBar := m.progress.View() //+ "\n\n" + helpStyle("Press ctl+c or q or Esc to quit")
 	view := lipgloss.JoinVertical(lipgloss.Center, progressSummary, progressBar)
 
 	return lipgloss.Place(m.width, m.height, lipgloss.Center, lipgloss.Center, view)
 }
 
 func (p Progress) tickCmd() tea.Cmd {
-	p.fundraiser = db.GetFundraiserData()
-	return tea.Tick(time.Second*5, func(t time.Time) tea.Msg {
+	return tea.Tick(time.Second*1, func(t time.Time) tea.Msg {
+	    p.fundraiser = db.GetFundraiserData()
 		return tickMsg(t)
 	})
 }

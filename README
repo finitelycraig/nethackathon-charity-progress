@@ -1,0 +1,7 @@
+# Nethackathon Charity Progress Bar
+
+The progress bar is hosted over ssh.  Connect via:
+
+```
+ssh charityprogress.nethackathon.org
+```
