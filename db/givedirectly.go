@@ -6,10 +6,9 @@ import (
 	"log"
 	"net/http"
 	"encoding/json"
-    "os"
 )
 
-var giveDirectlyURL = "https://partners.every.org/v0.2/nonprofit/givedirectly/fundraiser/nethackathon-vi-fundraising/raised?apiKey="
+var progressURL = "https://api.nethackathon.org/charity/progress"
 
 
 type Fundraiser struct {
@@ -21,8 +20,7 @@ type Fundraiser struct {
 }
 
 func GetFundraiserData() Fundraiser {
-    giveDirectlyAPIKey := os.Getenv("GIVEDIRECTLYAPI")
-	resp, err := http.Get(giveDirectlyURL + giveDirectlyAPIKey)
+	resp, err := http.Get(progressURL)
 	if err != nil {
 		log.Fatalln(err)
 	}
