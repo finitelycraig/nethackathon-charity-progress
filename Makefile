@@ -8,3 +8,4 @@ fmt:
 	@go fmt cmd/progress/main.go
 	@go fmt db/*.go
 	@go fmt data/*.go
+	@go fmt internal/*.go

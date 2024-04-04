@@ -42,15 +42,6 @@ const (
 
 var helpStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#626262")).Render
 
-func Run() {
-	p := NewProgress()
-
-	if _, err := tea.NewProgram(p, tea.WithAltScreen()).Run(); err != nil {
-		fmt.Println("Oh no!", err)
-		os.Exit(1)
-	}
-}
-
 type tickMsg time.Time
 
 func (p Progress) Init() tea.Cmd {

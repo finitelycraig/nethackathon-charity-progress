@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/finitelycraig/nethackathon-charity-progress/data"
+	"github.com/finitelycraig/nethackathon-charity-progress/internal"
 )
 
 func main() {
-	data.Run()
+	internal.Run()
 }
