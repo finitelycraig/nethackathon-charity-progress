@@ -4,15 +4,13 @@ import (
 	"fmt"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/charmbracelet/bubbles/progress"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	//"golang.org/x/term"
-
 	"github.com/finitelycraig/nethackathon-charity-progress/db"
+	"golang.org/x/term"
 )
 
 type Progress struct {
@@ -39,7 +37,7 @@ func NewProgress() Progress {
 
 const (
 	padding  = 2
-	maxWidth = 80 //,_,_ = term.GetSize(int(os.Stdout.Fd()))
+	maxWidth = 80
 )
 
 var helpStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#626262")).Render
@@ -84,9 +82,6 @@ func (m Progress) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		}
 
-		// Note that you can also use progress.Model.SetPercent to set the
-		// percentage value explicitly, too.
-		//cmd := m.progress.IncrPercent(0.25)
 		cmd := m.progress.SetPercent(m.goalPercentage())
 		return m, tea.Batch(m.tickCmd(), cmd)
 
@@ -102,7 +97,7 @@ func (m Progress) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func (p Progress) amountString(pad string) string {
+func (p Progress) amountString() string {
 	raised, err := strconv.Atoi(p.fundraiser.Raised)
 	if err != nil {
 		return "\n\n"
@@ -112,26 +107,26 @@ func (p Progress) amountString(pad string) string {
 	if supporters == 1 {
 		supporterors = "supporter"
 	}
-	return fmt.Sprintf("%s$%.2f USD\n%sRaised by %d %s\n", pad, float64(raised)/100.00, pad, supporters, supporterors)
+	return fmt.Sprintf("$%.2f USD\nRaised by %d %s\n", float64(raised)/100.00, supporters, supporterors)
 }
 
-func (p Progress) goalString(pad string) string {
+func (p Progress) goalString() string {
 	goal, err := strconv.Atoi(p.fundraiser.GoalAmount)
 	if err != nil {
 		return "\n\n"
 	}
-	return fmt.Sprintf("$%.2f USD%s\nGoal%s\n", float64(goal)/100.00, pad, pad)
+	return fmt.Sprintf("$%.2f USD\nGoal\n", float64(goal)/100.00)
 }
 
 func (m Progress) View() string {
-	pad := strings.Repeat(" ", padding)
 	raisedSummaryStyle := lipgloss.NewStyle().Width(m.progress.Width / 2).Align(lipgloss.Left)
 	goalSummaryStyle := lipgloss.NewStyle().Width(m.progress.Width / 2).Align(lipgloss.Right)
-	progressSummary := lipgloss.JoinHorizontal(lipgloss.Center, raisedSummaryStyle.Render(m.amountString(pad)), goalSummaryStyle.Render(m.goalString(pad+" ")))
-	return "\n" +
-		progressSummary + "\n" +
-		pad + m.progress.View() + "\n\n" +
-		pad + helpStyle("Press ctl+c or q or Esc to quit")
+	progressSummary := lipgloss.JoinHorizontal(lipgloss.Center, raisedSummaryStyle.Render(m.amountString()), goalSummaryStyle.Render(m.goalString()))
+	progressBar := m.progress.View() + "\n\n" + helpStyle("Press ctl+c or q or Esc to quit")
+	width, height, _ := term.GetSize(int(os.Stdout.Fd()))
+	view := lipgloss.JoinVertical(lipgloss.Center, progressSummary, progressBar)
+
+	return lipgloss.Place(width, height, lipgloss.Center, lipgloss.Center, view)
 }
 
 func (p Progress) tickCmd() tea.Cmd {

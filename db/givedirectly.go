@@ -1,7 +1,6 @@
 package db
 
 import (
-	//"fmt"
 	"encoding/json"
 	"io/ioutil"
 	"log"
@@ -28,7 +27,6 @@ func GetFundraiserData() Fundraiser {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	//bodyString := string(body)
 	fundraiser := Fundraiser{}
 	err = json.Unmarshal(body, &fundraiser)
 	if err != nil {
