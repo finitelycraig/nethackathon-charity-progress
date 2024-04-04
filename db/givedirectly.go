@@ -2,21 +2,20 @@ package db
 
 import (
 	//"fmt"
+	"encoding/json"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"encoding/json"
 )
 
 var progressURL = "https://api.nethackathon.org/charity/progress"
 
-
 type Fundraiser struct {
-	Currency   string     `json: "currency"`
-	Raised     string     `json: "raised"`
-    GoalAmount string     `json: "goalAmount"`
-    GoalType     string   `json: "goalType"`
-    Supporters int        `json: "supporters"`
+	Currency   string `json: "currency"`
+	Raised     string `json: "raised"`
+	GoalAmount string `json: "goalAmount"`
+	GoalType   string `json: "goalType"`
+	Supporters int    `json: "supporters"`
 }
 
 func GetFundraiserData() Fundraiser {
@@ -30,10 +29,10 @@ func GetFundraiserData() Fundraiser {
 		log.Fatalln(err)
 	}
 	//bodyString := string(body)
-    fundraiser := Fundraiser{}
-    err = json.Unmarshal(body, &fundraiser) 
-    if err != nil {
-        log.Fatalln(err)
-    }
+	fundraiser := Fundraiser{}
+	err = json.Unmarshal(body, &fundraiser)
+	if err != nil {
+		log.Fatalln(err)
+	}
 	return fundraiser
 }

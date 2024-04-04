@@ -3,43 +3,43 @@ package data
 import (
 	"fmt"
 	"os"
-    "strconv"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/charmbracelet/bubbles/progress"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-    //"golang.org/x/term"
+	//"golang.org/x/term"
 
-    "github.com/finitelycraig/nethackathon-charity-progress/db"
+	"github.com/finitelycraig/nethackathon-charity-progress/db"
 )
 
 type Progress struct {
-    fundraiser db.Fundraiser
+	fundraiser db.Fundraiser
 	progress   progress.Model
 }
 
 func (p Progress) goalPercentage() float64 {
-    current,err := strconv.Atoi(p.fundraiser.Raised)
-    if err != nil {
-        return 0.0
-    }
-    var goal int
-    goal, err = strconv.Atoi(p.fundraiser.GoalAmount)
-    if err != nil {
-        return 0.0
-    }
-    return (float64(current)/float64(goal))
+	current, err := strconv.Atoi(p.fundraiser.Raised)
+	if err != nil {
+		return 0.0
+	}
+	var goal int
+	goal, err = strconv.Atoi(p.fundraiser.GoalAmount)
+	if err != nil {
+		return 0.0
+	}
+	return (float64(current) / float64(goal))
 }
 
 func NewProgress() Progress {
-    return Progress{fundraiser: db.GetFundraiserData(), progress: progress.New(progress.WithDefaultGradient())}
+	return Progress{fundraiser: db.GetFundraiserData(), progress: progress.New(progress.WithDefaultGradient())}
 }
 
 const (
-    padding  = 2
-    maxWidth = 80 //,_,_ = term.GetSize(int(os.Stdout.Fd()))
+	padding  = 2
+	maxWidth = 80 //,_,_ = term.GetSize(int(os.Stdout.Fd()))
 )
 
 var helpStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#626262")).Render
@@ -79,7 +79,7 @@ func (m Progress) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// Note that you can also use progress.Model.SetPercent to set the
 		// percentage value explicitly, too.
 		//cmd := m.progress.IncrPercent(0.25)
-        cmd := m.progress.SetPercent(m.goalPercentage())
+		cmd := m.progress.SetPercent(m.goalPercentage())
 		return m, tea.Batch(tickCmd(), cmd)
 
 	// FrameMsg is sent when the progress bar wants to animate itself
