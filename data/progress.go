@@ -62,15 +62,15 @@ func (p Progress) Init() tea.Cmd {
 func (m Progress) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-        switch msg.Type {
-            case tea.KeyCtrlC, tea.KeyEsc:
-		        return m, tea.Quit
-            case tea.KeyRunes:
-                switch string(msg.Runes) {
-                case "q":
-                    return m, tea.Quit
-                }
-        }
+		switch msg.Type {
+		case tea.KeyCtrlC, tea.KeyEsc:
+			return m, tea.Quit
+		case tea.KeyRunes:
+			switch string(msg.Runes) {
+			case "q":
+				return m, tea.Quit
+			}
+		}
 
 	case tea.WindowSizeMsg:
 		m.progress.Width = msg.Width - padding*2 - 4
@@ -99,43 +99,43 @@ func (m Progress) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	default:
 		return m, nil
 	}
-    return m, nil
+	return m, nil
 }
 
 func (p Progress) amountString(pad string) string {
-    raised,err := strconv.Atoi(p.fundraiser.Raised)
-    if err != nil {
-        return "\n\n"
-    }
-    supporters := p.fundraiser.Supporters
-    supporterors := "supporters"
-    if supporters == 1 {
-        supporterors = "supporter"
-    }
-    return fmt.Sprintf("%s$%.2f USD\n%sRaised by %d %s\n", pad, float64(raised)/100.00, pad, supporters, supporterors)
+	raised, err := strconv.Atoi(p.fundraiser.Raised)
+	if err != nil {
+		return "\n\n"
+	}
+	supporters := p.fundraiser.Supporters
+	supporterors := "supporters"
+	if supporters == 1 {
+		supporterors = "supporter"
+	}
+	return fmt.Sprintf("%s$%.2f USD\n%sRaised by %d %s\n", pad, float64(raised)/100.00, pad, supporters, supporterors)
 }
 
 func (p Progress) goalString(pad string) string {
-    goal,err := strconv.Atoi(p.fundraiser.GoalAmount)
-    if err != nil {
-        return "\n\n"
-    }
-    return fmt.Sprintf("$%.2f USD%s\nGoal%s\n", float64(goal)/100.00, pad, pad)
+	goal, err := strconv.Atoi(p.fundraiser.GoalAmount)
+	if err != nil {
+		return "\n\n"
+	}
+	return fmt.Sprintf("$%.2f USD%s\nGoal%s\n", float64(goal)/100.00, pad, pad)
 }
 
 func (m Progress) View() string {
 	pad := strings.Repeat(" ", padding)
-    raisedSummaryStyle := lipgloss.NewStyle().Width(m.progress.Width/2).Align(lipgloss.Left)
-    goalSummaryStyle := lipgloss.NewStyle().Width(m.progress.Width/2).Align(lipgloss.Right)
-    progressSummary := lipgloss.JoinHorizontal(lipgloss.Center, raisedSummaryStyle.Render(m.amountString(pad)), goalSummaryStyle.Render(m.goalString(pad+" ")))
-    return "\n" +
-        progressSummary + "\n" +  
+	raisedSummaryStyle := lipgloss.NewStyle().Width(m.progress.Width / 2).Align(lipgloss.Left)
+	goalSummaryStyle := lipgloss.NewStyle().Width(m.progress.Width / 2).Align(lipgloss.Right)
+	progressSummary := lipgloss.JoinHorizontal(lipgloss.Center, raisedSummaryStyle.Render(m.amountString(pad)), goalSummaryStyle.Render(m.goalString(pad+" ")))
+	return "\n" +
+		progressSummary + "\n" +
 		pad + m.progress.View() + "\n\n" +
 		pad + helpStyle("Press ctl+c or q or Esc to quit")
 }
 
 func (p Progress) tickCmd() tea.Cmd {
-    p.fundraiser = db.GetFundraiserData()
+	p.fundraiser = db.GetFundraiserData()
 	return tea.Tick(time.Second*5, func(t time.Time) tea.Msg {
 		return tickMsg(t)
 	})
