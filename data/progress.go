@@ -62,7 +62,15 @@ func (p Progress) Init() tea.Cmd {
 func (m Progress) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		return m, tea.Quit
+        switch msg.Type {
+            case tea.KeyCtrlC, tea.KeyEsc:
+		        return m, tea.Quit
+            case tea.KeyRunes:
+                switch string(msg.Runes) {
+                case "q":
+                    return m, tea.Quit
+                }
+        }
 
 	case tea.WindowSizeMsg:
 		m.progress.Width = msg.Width - padding*2 - 4
@@ -91,6 +99,7 @@ func (m Progress) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	default:
 		return m, nil
 	}
+    return m, nil
 }
 
 func (p Progress) amountString(pad string) string {
@@ -122,7 +131,7 @@ func (m Progress) View() string {
     return "\n" +
         progressSummary + "\n" +  
 		pad + m.progress.View() + "\n\n" +
-		pad + helpStyle("Press any key to quit")
+		pad + helpStyle("Press ctl+c or q or Esc to quit")
 }
 
 func (p Progress) tickCmd() tea.Cmd {
