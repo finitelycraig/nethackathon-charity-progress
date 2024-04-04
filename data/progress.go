@@ -2,7 +2,6 @@ package data
 
 import (
 	"fmt"
-	"os"
 	"strconv"
 	"time"
 
@@ -10,11 +9,12 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/finitelycraig/nethackathon-charity-progress/db"
-	"golang.org/x/term"
 )
 
 type Progress struct {
 	fundraiser db.Fundraiser
+	width      int
+	height     int
 	progress   progress.Model
 }
 
@@ -62,6 +62,8 @@ func (m Progress) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 	case tea.WindowSizeMsg:
+		m.width = msg.Width
+		m.height = msg.Height
 		m.progress.Width = msg.Width - padding*2 - 4
 		if m.progress.Width > maxWidth {
 			m.progress.Width = maxWidth
@@ -114,10 +116,9 @@ func (m Progress) View() string {
 	goalSummaryStyle := lipgloss.NewStyle().Width(m.progress.Width / 2).Align(lipgloss.Right)
 	progressSummary := lipgloss.JoinHorizontal(lipgloss.Center, raisedSummaryStyle.Render(m.amountString()), goalSummaryStyle.Render(m.goalString()))
 	progressBar := m.progress.View() + "\n\n" + helpStyle("Press ctl+c or q or Esc to quit")
-	width, height, _ := term.GetSize(int(os.Stdout.Fd()))
 	view := lipgloss.JoinVertical(lipgloss.Center, progressSummary, progressBar)
 
-	return lipgloss.Place(width, height, lipgloss.Center, lipgloss.Center, view)
+	return lipgloss.Place(m.width, m.height, lipgloss.Center, lipgloss.Center, view)
 }
 
 func (p Progress) tickCmd() tea.Cmd {
