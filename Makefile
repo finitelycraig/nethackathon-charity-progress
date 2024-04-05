@@ -10,7 +10,7 @@ charityprogress-ssh: $(GOFILES)
 
 build-remote: build/charityprogress-ssh-linux-amd64
 
-build/charityprogress-ssh-linux-amd64:
+build/charityprogress-ssh-linux-amd64: $(GOFILES)
 	@env GOOS=linux GOARCH=amd64 go build -o build/charityprogress-ssh-linux-amd64 cmd/serve/main.go
 
 .PHONY=run

@@ -71,10 +71,7 @@ func (m Progress) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 
 	case tickMsg:
-		if m.progress.Percent() == 1.0 {
-			return m, tea.Quit
-		}
-
+        m.fundraiser = db.GetFundraiserData()        
 		cmd := m.progress.SetPercent(m.goalPercentage())
 		return m, tea.Batch(m.tickCmd(), cmd)
 
@@ -123,7 +120,6 @@ func (m Progress) View() string {
 
 func (p Progress) tickCmd() tea.Cmd {
 	return tea.Tick(time.Second*1, func(t time.Time) tea.Msg {
-	    p.fundraiser = db.GetFundraiserData()
 		return tickMsg(t)
 	})
 }
