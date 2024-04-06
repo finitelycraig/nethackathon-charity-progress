@@ -16,6 +16,8 @@ type Progress struct {
 	width      int
 	height     int
 	progress   progress.Model
+	showInfo   bool
+	showLink   bool
 }
 
 func (p Progress) goalPercentage() float64 {
@@ -40,7 +42,7 @@ const (
 	maxWidth = 80
 )
 
-var helpStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#626262")).Render
+var infoStyle = lipgloss.NewStyle().Align(lipgloss.Center).Render
 
 type tickMsg time.Time
 
@@ -58,6 +60,10 @@ func (m Progress) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			switch string(msg.Runes) {
 			case "q":
 				return m, tea.Quit
+			case "i":
+				m.showInfo = !m.showInfo
+			case "l":
+				m.showLink = !m.showLink
 			}
 		}
 
@@ -71,7 +77,7 @@ func (m Progress) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 
 	case tickMsg:
-        m.fundraiser = db.GetFundraiserData()        
+		m.fundraiser = db.GetFundraiserData()
 		cmd := m.progress.SetPercent(m.goalPercentage())
 		return m, tea.Batch(m.tickCmd(), cmd)
 
@@ -112,7 +118,13 @@ func (m Progress) View() string {
 	raisedSummaryStyle := lipgloss.NewStyle().Width(m.progress.Width / 2).Align(lipgloss.Left)
 	goalSummaryStyle := lipgloss.NewStyle().Width(m.progress.Width / 2).Align(lipgloss.Right)
 	progressSummary := lipgloss.JoinHorizontal(lipgloss.Center, raisedSummaryStyle.Render(m.amountString()), goalSummaryStyle.Render(m.goalString()))
-	progressBar := m.progress.View() //+ "\n\n" + helpStyle("Press ctl+c or q or Esc to quit")
+	progressBar := m.progress.View() //+ "\n\n" + infoStyle("Press ctl+c or q or Esc to quit")
+	if m.showInfo {
+		progressBar += "\n\n" + infoStyle("NetHackathon VI Fundraising for GiveDirectly!")
+		if m.showLink {
+			progressBar += "\n" + infoStyle("https://www.every.org/givedirectly/f/nethackathon-vi-fundraising")
+		}
+	}
 	view := lipgloss.JoinVertical(lipgloss.Center, progressSummary, progressBar)
 
 	return lipgloss.Place(m.width, m.height, lipgloss.Center, lipgloss.Center, view)
