@@ -18,6 +18,7 @@ type Progress struct {
 	progress   progress.Model
 	showInfo   bool
 	showLink   bool
+	showBitly  bool
 }
 
 func (p Progress) goalPercentage() float64 {
@@ -64,6 +65,8 @@ func (m Progress) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.showInfo = !m.showInfo
 			case "l":
 				m.showLink = !m.showLink
+			case "b":
+				m.showBitly = !m.showBitly
 			}
 		}
 
@@ -121,8 +124,11 @@ func (m Progress) View() string {
 	progressBar := m.progress.View() //+ "\n\n" + infoStyle("Press ctl+c or q or Esc to quit")
 	if m.showInfo {
 		progressBar += "\n\n" + infoStyle("NetHackathon VI Fundraising for GiveDirectly!")
-		if m.showLink {
+		if m.showLink && !m.showBitly {
 			progressBar += "\n" + infoStyle("https://www.every.org/givedirectly/f/nethackathon-vi-fundraising")
+		} else if m.showLink && m.showBitly {
+			progressBar += "\n" + infoStyle("https://bit.ly/nh-givedirectly")
+
 		}
 	}
 	view := lipgloss.JoinVertical(lipgloss.Center, progressSummary, progressBar)
