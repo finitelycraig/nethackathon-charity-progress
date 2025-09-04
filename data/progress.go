@@ -24,6 +24,7 @@ type Progress struct {
 	showLink   bool
 	showBitly  bool
 	showQR     bool
+	showHelp   bool
 }
 
 func (p Progress) goalPercentage() float64 {
@@ -86,6 +87,8 @@ func (m Progress) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.showBitly = !m.showBitly
 			case "c":
 				m.showQR = !m.showQR
+			case "h":
+				m.showHelp = !m.showHelp
 			}
 		}
 
@@ -226,7 +229,9 @@ func (m Progress) View() string {
 			}
 		}
 	}
-	if m.showQR {
+	if m.showHelp {
+		view = infoStyle("Press:\nh - for this help message\ni - to toggle info\nl - to toggle link\nb - to switch to bitly link\nc - toggle QR code\nq, esc, crtl+c - to quit")
+	} else if m.showQR {
 		view = infoStyle(m.qr)
 	} else {
 		view = lipgloss.JoinVertical(lipgloss.Center, progressSummary, progressBar)
